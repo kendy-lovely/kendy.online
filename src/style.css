@@ -1,0 +1,32 @@
+div img {
+    width:50%;
+    height:50%;
+    object-fit: contain; 
+}
+nav {
+    display:flex; 
+    flex-direction:row; 
+    width:fit-content; 
+    padding: 0.75em;
+}
+.navitem {
+    margin-right: 1em;
+    margin-top:5px;
+}
+.outer {
+    margin: auto; 
+    width: 50vw; 
+    height: fit-content; 
+    border: solid 2px;
+    padding-bottom: 10px;
+}
+.main {
+    margin: auto;
+    width: 95%;
+    height: 95%;
+}
+@media (max-width: 1080px) {
+    .outer {
+        width: 85vw;
+    }
+}
