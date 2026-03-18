@@ -20,7 +20,7 @@
             for (const img of imgs) {
                 newPost.value.text += 
                     `<br>
-                    <div style="margin:auto;width:80%;aspect-ratio: 1;background-image:url(https://blacksky.app/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3A67y2btce7men5zg4eryuquqf&cid=${img.image.ref.$link as string});background-repeat:no-repeat;background-position:center;background-size:cover;""></div>`
+                    <div style="margin:auto;width:50%;aspect-ratio: 1;background-image:url(https://blacksky.app/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3A67y2btce7men5zg4eryuquqf&cid=${img.image.ref.$link as string});background-repeat:no-repeat;background-position:center;background-size:cover;""></div>`
             }
 
             return newPost;
