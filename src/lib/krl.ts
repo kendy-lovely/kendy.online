@@ -3,7 +3,7 @@ export class KRLApi {
     private url: string;
 
     private constructor() {
-        this.url = "/api/krl";
+        this.url = "https://corsproxy.io/?url=" + encodeURIComponent("https://kci.id/api/krl");
     }
 
     public static get instance() {
@@ -33,7 +33,7 @@ export async function getStations() {
     var areas: Array<string> = new Array<string>;
 
     try {
-        const stationsJson = await api.callApi("/stations");
+        const stationsJson = await api.callApi(encodeURIComponent("/stations"));
         if (!stationsJson || stationsJson.status != 200)
             throw new Error("failed to get stations")
 
