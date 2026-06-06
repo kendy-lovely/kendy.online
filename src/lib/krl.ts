@@ -3,7 +3,7 @@ export class KRLApi {
     private url: string;
 
     private constructor() {
-        this.url = "https://proxy.corsfix.com/?" + "kci.id/api/krl";
+        this.url = "https://cors.kendy.online?" + "https://kci.id/api/krl";
     }
 
     public static get instance() {
