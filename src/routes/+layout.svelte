@@ -1,11 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { page } from '$app/state';
 	import favicon from '$lib/assets/favicon.ico';
 	import "../style.css";
 
 	let { children } = $props();
-  const currentPath = $derived(page.url.pathname)
 
   let kendy = $derived(`/kendys/${page.url.pathname === '/' ? 'home' : page.url.pathname.split('/')[1] }.png`)
 </script>
