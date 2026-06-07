@@ -1,4 +1,4 @@
-export class KRLApi {
+class KRLApi {
     static #instance: KRLApi;
     private url: string;
 
@@ -13,33 +13,28 @@ export class KRLApi {
     }
 
     public async callApi(path: string) {
-        try {
-            const res = await fetch(this.url + path);
+        return fetch(this.url + path)
+        .then(res => {
             if (!res.ok)
                 throw new Error(`status: ${res.status}`);
 
-            const json = await res.json();
-            return json;
-        } catch (error: any) {
-            console.error(error.message);
-        }
+            return res.json();
+        })
     }
 }
 
-const api = KRLApi.instance;
+export const api = KRLApi.instance;
 
 export async function getStations() {
-    var stations: Map<string, string> = new Map<string, string>;
-    var areas: Array<string> = new Array<string>;
+    return api.callApi("/stations")
+    .then(stationsJson => {
+        let stations: Map<string, string> = new Map<string, string>;
+        let areas: Array<string> = new Array<string>;
 
-    try {
-        const stationsJson = await api.callApi("/stations");
         if (!stationsJson || stationsJson.status != 200)
             throw new Error("failed to get stations")
 
-        const data = stationsJson.data
-
-        for (const station of data) {
+        for (const station of stationsJson.data) {
             if (station.fg_enable == 0) {
                 if (areas.length > 0) break;
                 areas.push(station.sta_name)
@@ -48,11 +43,9 @@ export async function getStations() {
 
             stations.set(station.sta_id, station.sta_name)
         }
-    } catch (error: any) {
-        console.error(error.message)
-    }
 
-    return {stations, areas};
+        return {stations, areas};
+    })
 }
 
 class Train {

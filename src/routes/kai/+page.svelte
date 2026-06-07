@@ -6,8 +6,8 @@
     let areas: Array<string>;
 
     onMount(async () => {
-        ({stations, areas} = await getStations());
-    })
+        getStations().then(res => ({ stations, areas } = res));
+    });
 </script>
 
 <h1>KRL tracker based on CommunalLine</h1>
