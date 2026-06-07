@@ -25,26 +25,30 @@ class KRLApi {
 
 export const api = KRLApi.instance;
 
+export type Area = {
+    area: string;
+    stations: Map<string, string>;
+}
+
 export async function getStations() {
     return api.callApi("/stations")
-    .then(stationsJson => {
-        let stations: Map<string, string> = new Map<string, string>;
-        let areas: Array<string> = new Array<string>;
-
-        if (!stationsJson || stationsJson.status != 200)
+    .then((res: { data: Array<any>, status: number }) => {
+        if (!res || res.status != 200)
             throw new Error("failed to get stations")
 
-        for (const station of stationsJson.data) {
-            if (station.fg_enable == 0) {
-                if (areas.length > 0) break;
-                areas.push(station.sta_name)
-                continue;
-            }
+        const area = res.data
+        .reduce((acc: Array<Area>, curr: any) => {
+            if (curr.fg_enable == 0)
+                acc.push({ area: curr.sta_name, stations: new Map<string, string> });
+            else
+                acc.at(-1)?.stations.set(curr.sta_id, curr.sta_name);
 
-            stations.set(station.sta_id, station.sta_name)
-        }
+            return acc;
+        }, []);
 
-        return {stations, areas};
+        const jabodetabek = area[0]
+
+        return jabodetabek;
     })
 }
 

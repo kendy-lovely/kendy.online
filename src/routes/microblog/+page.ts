@@ -1,11 +1,11 @@
-import { Client, CredentialManager, ok, simpleFetchHandler} from '@atcute/client';
+import { Client, ok, simpleFetchHandler} from '@atcute/client';
 import type {} from '@atcute/bluesky';
 import type {} from '@atcute/atproto';
 type Author = {
-        handle: string;
-        displayName: string;
-        pfp: string;
-    }
+    handle: string;
+    displayName: string;
+    pfp: string;
+}
 
 async function fetchMicroBlog() {
     const rpc = new Client({ handler: simpleFetchHandler({ service: "https://blacksky.app"}) });

@@ -1,27 +1,26 @@
 <script lang="ts">
-    import { getStations } from "$lib/krl";
+    import { getStations, type Area } from "$lib/krl";
     import { onMount } from "svelte";
 
-    let stations: Map<string, string>;
-    let areas: Array<string>;
+    let area: Area
 
     onMount(async () => {
-        getStations().then(res => ({ stations, areas } = res));
+        getStations()
+        .then(res => area = res)
+        .catch((err: string) => area = { area: "ERROR", stations: new Map([["err", err]]) });
     });
 </script>
 
 <h1>KRL tracker based on CommunalLine</h1>
 <p>track all ur indonesian trains today !</p>
 <select name="stations" id="sta">
-{#if !areas || !stations}
-  <option value="wait">Waiting...</option>
+{#if !area}
+    <option value="wait">Waiting...</option>
 {:else}
-    {#each areas as area}
-        <optgroup label={area}>
-        {#each stations as [id, name]}
-            <option value={id}>{name}</option>
-        {/each}
-        </optgroup>
+    <optgroup label={area.area}>
+    {#each area.stations as [id, name]}
+        <option value={id}>{name}</option>
     {/each}
+    </optgroup>
 {/if}
 </select>
