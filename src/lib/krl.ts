@@ -27,25 +27,30 @@ export type Area = {
     stations: Map<string, string>;
 }
 
-export async function getStations() {
+export async function getStations(): Promise<Area> {
+    const separateByArea = (arr: Array<any>) =>
+        arr.reduce((acc: Array<any>, curr: any) =>
+            curr.fg_enable == 0 ?
+                [ ...acc, {
+                    area: curr.sta_name, 
+                    stations: new Map<string, string>
+                }] :
+                (({rest, last}) => 
+                    [ ...rest, { 
+                        ...last,
+                        stations: new Map(last.stations).set(curr.sta_id, curr.sta_name)
+                    }])
+                ({
+                    rest: acc.slice(0, -1), 
+                    last: acc.at(-1)!
+                }), [])
+
     return api.callApi("/stations")
-    .then((res: { data: Array<any>, status: number }) => (!res || res.status != 200) ?
-        Promise.reject(new Error("failed to fetch stations")) :
-        res.data.reduce((acc: Array<Area>, curr: any) => (curr.fg_enable == 0) ?
-            [
-                ...acc, 
-                {
-                    area: curr.sta_name, 
-                    stations: new Map<string, string> 
-                }
-            ] :
-            [
-                ...acc.slice(0, -1), 
-                {
-                    area: curr.sta_name, 
-                    stations: [new Map([...acc.at(-1)!.stations, [curr.sta_id, curr.sta_name]])]
-                }
-            ], [])[0])
+    .then((res: { data: Array<any>, status: number }) => 
+        res && res.status === 200 ?
+            separateByArea(res.data)[0] :
+            Promise.reject(new Error("failed to fetch stations")));
+            
 }
 
 class Train {
@@ -57,15 +62,5 @@ class Train {
         this.line = line
     }
 
-    public async getStops() {
-        try {
-            const res = await api.callApi(`/train-schedule?trainid=${this.id}`);
-            if (!res || res.status != 200)
-                throw new Error("failed to get stations")
-            
-            
-        } catch (error: any) {
-            console.error(error.message);
-        }
-    }
+    public async getStops() {}
 }
