@@ -5,9 +5,9 @@
     let area: Area
 
     onMount(async () => {
-        getStations()
-        .then(res => area = res)
-        .catch((err: string) => area = { area: "ERROR", stations: new Map([["err", err]]) });
+        area = await getStations()
+        .then(res => res)
+        .catch((err: string) => ({ area: "ERROR", stations: new Map([["err", err]]) }));
     });
 </script>
 

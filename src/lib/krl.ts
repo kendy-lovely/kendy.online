@@ -14,12 +14,9 @@ class KRLApi {
 
     public async callApi(path: string) {
         return fetch(this.url + path)
-        .then(res => {
-            if (!res.ok)
-                throw new Error(`status: ${res.status}`);
-
-            return res.json();
-        })
+        .then(res => res.ok ?
+            res.json() :
+            Promise.reject(new Error(`status: ${res.status}`)))
     }
 }
 
@@ -32,24 +29,23 @@ export type Area = {
 
 export async function getStations() {
     return api.callApi("/stations")
-    .then((res: { data: Array<any>, status: number }) => {
-        if (!res || res.status != 200)
-            throw new Error("failed to get stations")
-
-        const area = res.data
-        .reduce((acc: Array<Area>, curr: any) => {
-            if (curr.fg_enable == 0)
-                acc.push({ area: curr.sta_name, stations: new Map<string, string> });
-            else
-                acc.at(-1)?.stations.set(curr.sta_id, curr.sta_name);
-
-            return acc;
-        }, []);
-
-        const jabodetabek = area[0]
-
-        return jabodetabek;
-    })
+    .then((res: { data: Array<any>, status: number }) => (!res || res.status != 200) ?
+        Promise.reject(new Error("failed to fetch stations")) :
+        res.data.reduce((acc: Array<Area>, curr: any) => (curr.fg_enable == 0) ?
+            [
+                ...acc, 
+                {
+                    area: curr.sta_name, 
+                    stations: new Map<string, string> 
+                }
+            ] :
+            [
+                ...acc.slice(0, -1), 
+                {
+                    area: curr.sta_name, 
+                    stations: [new Map([...acc.at(-1)!.stations, [curr.sta_id, curr.sta_name]])]
+                }
+            ], [])[0])
 }
 
 class Train {
